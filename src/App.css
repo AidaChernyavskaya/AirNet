@@ -9,15 +9,18 @@
 }
 
 .header {
-  background-color: white;
   text-align: center;
   padding: 15px;
 }
 
-.sider {
-  padding: 20px;
+.title{
+  color: white !important;
 }
 
-.ant-layout .ant-layout-sider {
-  background: #e3e3e3;
+.content {
+  padding: 50px;
+}
+
+.calendar {
+  border-radius: 10px;
 }
