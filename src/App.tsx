@@ -1,17 +1,15 @@
 import React from 'react';
 import './App.css';
-import {Calendar, Layout, Typography} from "antd";
-import {Content, Footer, Header} from "antd/es/layout/layout";
+import {Layout} from "antd";
 import HeaderBlock from "./components/HeaderBlock/HeaderBlock";
 import FooterBlock from "./components/FooterBlock/FooterBlock";
+import ContentBlock from "./components/ContentBlock/ContentBlock";
 
 function App() {
     return (
         <Layout>
             <HeaderBlock/>
-            <Content className="content">
-                <Calendar className="calendar"></Calendar>
-            </Content>
+            <ContentBlock/>
             <FooterBlock/>
         </Layout>
     );
