@@ -1,3 +1,23 @@
-.App {
+*, ::after, ::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.footer{
   text-align: center;
+}
+
+.header {
+  background-color: white;
+  text-align: center;
+  padding: 15px;
+}
+
+.sider {
+  padding: 20px;
+}
+
+.ant-layout .ant-layout-sider {
+  background: #e3e3e3;
 }
