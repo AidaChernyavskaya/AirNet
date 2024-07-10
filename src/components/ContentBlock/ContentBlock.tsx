@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {Badge, Calendar, Modal} from "antd";
+import {Badge, Button, Calendar, Form, Input, Modal} from "antd";
 import {Content} from "antd/es/layout/layout";
 import {Dayjs} from "dayjs";
 import dayjs from 'dayjs';
+import {useForm} from "antd/es/form/Form";
 
 export interface ITask {
     type: "warning" | "success" | "processing" | "error" | "default" | undefined;
@@ -45,7 +46,6 @@ const getDateFormat = (value: Dayjs): string => {
 }
 
 const getListData = (value: Dayjs): ITasksList[] => {
-    console.log(value, dayjs(value).format('DD-MM-YYYY'));
     const date = getDateFormat(value);
     return listData.filter(el => el.date === date);
 }
@@ -53,6 +53,8 @@ const getListData = (value: Dayjs): ITasksList[] => {
 const ContentBlock = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs().format('DD-MM-YYYY'));
+    const [form] = useForm();
+    const [task, setTask] = useState('');
     const showModal = (date: Dayjs) => {
         setSelectedDate(dayjs(date).format('DD-MM-YYYY'));
         setIsModalOpen(true);
@@ -63,6 +65,11 @@ const ContentBlock = () => {
     const handleCancel = () => {
         setIsModalOpen(false);
     };
+
+    const handleClick = () => {
+        setTask('');
+        form.resetFields();
+    }
 
     const dateCellRender = (value: Dayjs) => {
     const data = getListData(value);
@@ -88,6 +95,25 @@ const ContentBlock = () => {
 
             <Modal title="Day tasks" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <p>Current date: {selectedDate}</p>
+                <Form
+                    layout={"inline"} className="form" autoComplete={'off'}
+                    onFinish={handleClick} form={form}
+                >
+                    <Form.Item
+                        className="input" name={'task'}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your task!',
+                            },
+                        ]}
+                    >
+                        <Input placeholder="input task" value={task} onChange={(event) => setTask(event.target.value)}/>
+                    </Form.Item>
+                    <Form.Item className="button_submit">
+                        <Button type="primary" htmlType={"submit"}>Submit</Button>
+                    </Form.Item>
+                </Form>
             </Modal>
         </Content>
     );

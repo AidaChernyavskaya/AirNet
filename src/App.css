@@ -24,3 +24,21 @@
 .calendar {
   border-radius: 10px;
 }
+
+.form {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.ant-form-inline .ant-form-item {
+  margin-inline-end: 0;
+  flex: auto;
+}
+
+.ant-form-item-control-input-content {
+  margin-right: 10px;
+}
+
+/*.button_submit {*/
+/*  flex-grow: 1;*/
+/*}*/
