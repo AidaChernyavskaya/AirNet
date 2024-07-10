@@ -2,6 +2,7 @@ import React from 'react';
 import {Badge, Calendar} from "antd";
 import {Content} from "antd/es/layout/layout";
 import {Dayjs} from "dayjs";
+import dayjs from 'dayjs';
 
 export interface ITask {
     type: "warning" | "success" | "processing" | "error" | "default" | undefined;
@@ -9,13 +10,13 @@ export interface ITask {
 }
 
 export interface ITasksList {
-    date: number,
+    date: string,
     tasks: ITask[]
 }
 
 const listData: ITasksList[] = [
     {
-        date: 8,
+        date: '08-01-2024',
         tasks: [
             {
                 type: 'success',
@@ -28,7 +29,7 @@ const listData: ITasksList[] = [
         ]
     },
     {
-        date: 10,
+        date: '01-07-2024',
         tasks: [
             {
                 type: 'warning',
@@ -39,9 +40,14 @@ const listData: ITasksList[] = [
     },
 ];
 
+const getDateFormat = (value: Dayjs): string => {
+    return dayjs(value).format('DD-MM-YYYY');
+}
+
 const getListData = (value: Dayjs): ITasksList[] => {
-    console.log(value, value.date(), value.month(), value.year());
-    return listData.filter(el => el.date === value.date());
+    console.log(value, dayjs(value).format('DD-MM-YYYY'));
+    const date = getDateFormat(value);
+    return listData.filter(el => el.date === date);
 }
 
 const ContentBlock = () => {
