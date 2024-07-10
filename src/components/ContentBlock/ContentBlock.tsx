@@ -1,5 +1,5 @@
-import React from 'react';
-import {Badge, Calendar} from "antd";
+import React, {useState} from 'react';
+import {Badge, Calendar, Modal} from "antd";
 import {Content} from "antd/es/layout/layout";
 import {Dayjs} from "dayjs";
 import dayjs from 'dayjs';
@@ -51,6 +51,19 @@ const getListData = (value: Dayjs): ITasksList[] => {
 }
 
 const ContentBlock = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(dayjs().format('DD-MM-YYYY'));
+    const showModal = (date: Dayjs) => {
+        setSelectedDate(dayjs(date).format('DD-MM-YYYY'));
+        setIsModalOpen(true);
+    };
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
     const dateCellRender = (value: Dayjs) => {
     const data = getListData(value);
     const tasks = data.length !== 0 ? data[0].tasks : [];
@@ -71,7 +84,11 @@ const ContentBlock = () => {
 
     return (
         <Content className="content">
-            <Calendar className="calendar" cellRender={cellRender}></Calendar>
+            <Calendar className="calendar" cellRender={cellRender} onSelect={showModal}></Calendar>
+
+            <Modal title="Day tasks" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                <p>Current date: {selectedDate}</p>
+            </Modal>
         </Content>
     );
 };
