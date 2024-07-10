@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Badge, Button, Calendar, Form, Input, Modal} from "antd";
 import {Content} from "antd/es/layout/layout";
 import {Dayjs} from "dayjs";
@@ -50,14 +50,28 @@ const getListData = (value: Dayjs): ITasksList[] => {
     return listData.filter(el => el.date === date);
 }
 
+const getTasksForDate = (value: Dayjs): ITask[] => {
+    const data = getListData(value);
+    return data.length !== 0 ? data[0].tasks : [];
+}
+
 const ContentBlock = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs().format('DD-MM-YYYY'));
+    const [tasksForDate, setTasksForDate] = useState<Array<ITask>>([]);
+    const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
     const [form] = useForm();
     const [task, setTask] = useState('');
+
+    useEffect(() => {
+        const tasks = getTasksForDate(currentDate);
+        setTasksForDate([...tasks]);
+    }, [currentDate]);
+
     const showModal = (date: Dayjs) => {
         setSelectedDate(dayjs(date).format('DD-MM-YYYY'));
-        setIsModalOpen(true);
+        setCurrentDate(date);
+        setIsModalOpen(date.month() === currentDate.month());
     };
     const handleOk = () => {
         setIsModalOpen(false);
@@ -72,8 +86,7 @@ const ContentBlock = () => {
     }
 
     const dateCellRender = (value: Dayjs) => {
-    const data = getListData(value);
-    const tasks = data.length !== 0 ? data[0].tasks : [];
+    const tasks = getTasksForDate(value);
         return (
             <ul className="events">
                 {tasks.map((item) => (
@@ -91,10 +104,10 @@ const ContentBlock = () => {
 
     return (
         <Content className="content">
-            <Calendar className="calendar" cellRender={cellRender} onSelect={showModal}></Calendar>
+            <Calendar className="calendar" cellRender={cellRender} onChange={showModal}></Calendar>
 
             <Modal title="Day tasks" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                <p>Current date: {selectedDate}</p>
+                <p className="current_date">Current date: {selectedDate}</p>
                 <Form
                     layout={"inline"} className="form" autoComplete={'off'}
                     onFinish={handleClick} form={form}
@@ -114,6 +127,9 @@ const ContentBlock = () => {
                         <Button type="primary" htmlType={"submit"}>Submit</Button>
                     </Form.Item>
                 </Form>
+                {tasksForDate.map((task, index) => (
+                    <p key={index}>{task.content}</p>
+                ))}
             </Modal>
         </Content>
     );
