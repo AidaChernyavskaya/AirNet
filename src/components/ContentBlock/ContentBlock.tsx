@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Badge, Button, Calendar, Form, Input, Modal} from "antd";
+import {Badge, Button, Calendar, Checkbox, Col, Flex, Form, Input, Modal, Row} from "antd";
 import {Content} from "antd/es/layout/layout";
 import {Dayjs} from "dayjs";
 import dayjs from 'dayjs';
 import {useForm} from "antd/es/form/Form";
 import {getJSONFromStorage, setJSONToStorage} from "../../localStorage";
+import {CheckboxChangeEvent} from "antd/es/checkbox";
+import {DeleteFilled, DragOutlined, EditFilled} from "@ant-design/icons";
 
 export interface ITask {
     type: "warning" | "success" | "processing" | "error" | "default" | undefined;
@@ -108,6 +110,10 @@ const ContentBlock = () => {
         form.resetFields();
     }
 
+    const onChangeCheckbox = (e: CheckboxChangeEvent) => {
+        console.log(`checked = ${e.target.checked}`);
+    }
+
     const getTasksList = (value: Dayjs): ITasksList[] => {
         const date = getDateFormat(value);
         return tasksList.filter(el => el.date === date);
@@ -160,8 +166,26 @@ const ContentBlock = () => {
                         <Button type="primary" htmlType={"submit"}>Submit</Button>
                     </Form.Item>
                 </Form>
-                {tasksForDate.map((task, index) => (
-                    <p key={index}>{task.content}</p>
+                {tasksForDate.length === 0
+                    ? <p>No tasks for this date</p>
+                    : tasksForDate.map((task, index) => (
+                        <Row className='row' align={'middle'}>
+                            <Col flex={'20px'} className='col'>
+                                <Checkbox onChange={onChangeCheckbox}></Checkbox>
+                            </Col>
+                            <Col flex={"auto"} className='col'>
+                                <p key={index}>{task.content}</p>
+                            </Col>
+                            <Col flex={'25px'} className='col'>
+                                <Button icon={<EditFilled />} size={"small"}/>
+                            </Col>
+                            <Col flex={'25px'} className='col'>
+                                <Button icon={<DeleteFilled />} size={"small"}/>
+                            </Col>
+                            <Col flex={'25px'} className='col'>
+                                <Button icon={<DragOutlined />} size={"small"}/>
+                            </Col>
+                        </Row>
                 ))}
             </Modal>
         </Content>
