@@ -4,6 +4,7 @@ import {Content} from "antd/es/layout/layout";
 import {Dayjs} from "dayjs";
 import dayjs from 'dayjs';
 import {useForm} from "antd/es/form/Form";
+import {getJSONFromStorage, setJSONToStorage} from "../../localStorage";
 
 export interface ITask {
     type: "warning" | "success" | "processing" | "error" | "default" | undefined;
@@ -45,16 +46,6 @@ const getDateFormat = (value: Dayjs): string => {
     return dayjs(value).format('DD-MM-YYYY');
 }
 
-const getListData = (value: Dayjs): ITasksList[] => {
-    const date = getDateFormat(value);
-    return listData.filter(el => el.date === date);
-}
-
-const getTasksForDate = (value: Dayjs): ITask[] => {
-    const data = getListData(value);
-    return data.length !== 0 ? data[0].tasks : [];
-}
-
 const ContentBlock = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs().format('DD-MM-YYYY'));
@@ -62,6 +53,18 @@ const ContentBlock = () => {
     const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
     const [form] = useForm();
     const [task, setTask] = useState('');
+    const [tasksList, setTasksList] = useState<Array<ITasksList>>(getJSONFromStorage('tasksList'));
+
+    useEffect(() => {
+        if (tasksList.length === 0) {
+            setJSONToStorage('tasksList', JSON.stringify(listData));
+            setTasksList(listData);
+        }
+    },[])
+
+    useEffect(() => {
+        setJSONToStorage('tasksList', JSON.stringify(tasksList));
+    },[tasksList])
 
     useEffect(() => {
         const tasks = getTasksForDate(currentDate);
@@ -81,8 +84,38 @@ const ContentBlock = () => {
     };
 
     const handleClick = () => {
+        const newTask: ITask = {
+            type: 'processing',
+            content: task,
+        };
+        if (tasksForDate.length === 0) {
+            const newDate: ITasksList = {
+                date: dayjs(currentDate).format('DD-MM-YYYY'),
+                tasks: [newTask]
+            };
+            setTasksList([...tasksList, newDate]);
+        } else {
+            const tasksListCopy = [...tasksList];
+            tasksListCopy.map((el) => {
+                if (el.date === getDateFormat(currentDate)) {
+                    el.tasks = [...el.tasks, newTask];
+                }
+            });
+            setTasksList([...tasksListCopy]);
+        }
+        setTasksForDate([...tasksForDate, newTask]);
         setTask('');
         form.resetFields();
+    }
+
+    const getTasksList = (value: Dayjs): ITasksList[] => {
+        const date = getDateFormat(value);
+        return tasksList.filter(el => el.date === date);
+    }
+
+    const getTasksForDate = (value: Dayjs): ITask[] => {
+        const data = getTasksList(value);
+        return data.length !== 0 ? data[0].tasks : [];
     }
 
     const dateCellRender = (value: Dayjs) => {
@@ -104,7 +137,7 @@ const ContentBlock = () => {
 
     return (
         <Content className="content">
-            <Calendar className="calendar" cellRender={cellRender} onChange={showModal}></Calendar>
+            <Calendar className="calendar" cellRender={cellRender} onSelect={showModal}></Calendar>
 
             <Modal title="Day tasks" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <p className="current_date">Current date: {selectedDate}</p>
