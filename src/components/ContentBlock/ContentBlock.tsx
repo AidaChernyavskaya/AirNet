@@ -1,12 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Badge, Button, Calendar, Checkbox, Col, Flex, Form, Input, Modal, Row} from "antd";
+import React, {useState} from 'react';
+import {Badge, Calendar,} from "antd";
 import {Content} from "antd/es/layout/layout";
 import {Dayjs} from "dayjs";
 import dayjs from 'dayjs';
-import {useForm} from "antd/es/form/Form";
-import {getJSONFromStorage, setJSONToStorage} from "../../localStorage";
-import {CheckboxChangeEvent} from "antd/es/checkbox";
-import {DeleteFilled, DragOutlined, EditFilled} from "@ant-design/icons";
+import {getJSONFromStorage} from "../../localStorage";
+import ModalBox from "../ModalBox/ModalBox";
 
 export interface ITask {
     id: number;
@@ -19,7 +17,7 @@ export interface ITasksList {
     tasks: ITask[]
 }
 
-const listData: ITasksList[] = [
+export const listData: ITasksList[] = [
     {
         date: '08-01-2024',
         tasks: [
@@ -48,124 +46,34 @@ const listData: ITasksList[] = [
     },
 ];
 
-const getDateFormat = (value: Dayjs): string => {
+export const getDateFormat = (value: Dayjs): string => {
     return dayjs(value).format('DD-MM-YYYY');
+}
+
+export const getTasksList = (value: Dayjs, tasksList: ITasksList[]): ITasksList[] => {
+    const date = getDateFormat(value);
+    return tasksList.filter(el => el.date === date);
+}
+
+export const getTasksForDate = (value: Dayjs, tasksList: ITasksList[]): ITask[] => {
+    const data = getTasksList(value, tasksList);
+    return data.length !== 0 ? data[0].tasks : [];
 }
 
 const ContentBlock = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(dayjs().format('DD-MM-YYYY'));
-    const [tasksForDate, setTasksForDate] = useState<Array<ITask>>([]);
     const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
-    const [form] = useForm();
-    const [task, setTask] = useState('');
     const [tasksList, setTasksList] = useState<Array<ITasksList>>(getJSONFromStorage('tasksList'));
-
-    useEffect(() => {
-        if (tasksList.length === 0) {
-            setJSONToStorage('tasksList', JSON.stringify(listData));
-            setTasksList(listData);
-        }
-    },[])
-
-    useEffect(() => {
-        setJSONToStorage('tasksList', JSON.stringify(tasksList));
-    },[tasksList])
-
-    useEffect(() => {
-        const tasks = getTasksForDate(currentDate);
-        setTasksForDate([...tasks]);
-    }, [currentDate]);
 
     const showModal = (date: Dayjs) => {
         setSelectedDate(dayjs(date).format('DD-MM-YYYY'));
         setCurrentDate(date);
         setIsModalOpen(date.month() === currentDate.month());
     };
-    const handleOk = () => {
-        setIsModalOpen(false);
-    };
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleClick = () => {
-        const newTask: ITask = {
-            id: Date.now(),
-            type: 'processing',
-            content: task,
-        };
-        if (tasksForDate.length === 0) {
-            const newDate: ITasksList = {
-                date: dayjs(currentDate).format('DD-MM-YYYY'),
-                tasks: [newTask]
-            };
-            setTasksList([...tasksList, newDate]);
-        } else {
-            const tasksListCopy = [...tasksList];
-            tasksListCopy.map((el) => {
-                if (el.date === getDateFormat(currentDate)) {
-                    el.tasks = [...el.tasks, newTask];
-                }
-            });
-            setTasksList([...tasksListCopy]);
-        }
-        setTasksForDate([...tasksForDate, newTask]);
-        setTask('');
-        form.resetFields();
-    }
-
-    const toggleTask = (task: ITask) => {
-        const tasksListCopy = [...tasksList];
-        tasksListCopy.map((el) => {
-            if (el.date === getDateFormat(currentDate)) {
-                el.tasks.map(elem => {
-                    if (elem.id === task.id) {
-                        elem.type = elem.type === 'success' ? 'processing' : 'success';
-                    }
-                })
-            }
-        });
-        setTasksList([...tasksListCopy]);
-    }
-
-    const deleteTask = (task: ITask) => {
-        const tasksListCopy = [...tasksList];
-        let index = 0;
-        tasksListCopy.map((el) => {
-            if (el.date === getDateFormat(currentDate)) {
-                el.tasks.map((elem, i) => {
-                    if (elem.id === task.id) {
-                        index = i;
-                    }
-                });
-                el.tasks.splice(index, 1);
-                setTasksForDate([...el.tasks]);
-            }
-        });
-        setTasksList([...tasksListCopy]);
-    }
-
-    const handleClickDelete = (task: ITask) => {
-        deleteTask(task);
-    }
-
-    const onChangeCheckbox = (e: CheckboxChangeEvent, task: ITask) => {
-        toggleTask(task);
-    }
-
-    const getTasksList = (value: Dayjs): ITasksList[] => {
-        const date = getDateFormat(value);
-        return tasksList.filter(el => el.date === date);
-    }
-
-    const getTasksForDate = (value: Dayjs): ITask[] => {
-        const data = getTasksList(value);
-        return data.length !== 0 ? data[0].tasks : [];
-    }
 
     const dateCellRender = (value: Dayjs) => {
-    const tasks = getTasksForDate(value);
+    const tasks = getTasksForDate(value, tasksList);
         return (
             <ul className="events">
                 {tasks.map((item) => (
@@ -184,53 +92,10 @@ const ContentBlock = () => {
     return (
         <Content className="content">
             <Calendar className="calendar" cellRender={cellRender} onSelect={showModal}></Calendar>
-
-            <Modal title="Day tasks" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                <p className="current_date">Current date: {selectedDate}</p>
-                <Form
-                    layout={"inline"} className="form" autoComplete={'off'}
-                    onFinish={handleClick} form={form}
-                >
-                    <Form.Item
-                        className="input" name={'task'}
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please input your task!',
-                            },
-                        ]}
-                    >
-                        <Input placeholder="input task" value={task} onChange={(event) => setTask(event.target.value)}/>
-                    </Form.Item>
-                    <Form.Item className="button_submit">
-                        <Button type="primary" htmlType={"submit"}>Submit</Button>
-                    </Form.Item>
-                </Form>
-                {tasksForDate.length === 0
-                    ? <p>No tasks for this date</p>
-                    : tasksForDate.map((task, index) => (
-                        <Row className='row' align={'middle'} key={index}>
-                            <Col flex={'20px'} className='col'>
-                                <Checkbox
-                                    onChange={(e) => onChangeCheckbox(e, task)}
-                                    checked={task.type === 'success'}
-                                ></Checkbox>
-                            </Col>
-                            <Col flex={"auto"} className='col'>
-                                <p>{task.content}</p>
-                            </Col>
-                            <Col flex={'25px'} className='col'>
-                                <Button icon={<EditFilled />} size={"small"}/>
-                            </Col>
-                            <Col flex={'25px'} className='col'>
-                                <Button icon={<DeleteFilled />} size={"small"} onClick={() => handleClickDelete(task)}/>
-                            </Col>
-                            <Col flex={'25px'} className='col'>
-                                <Button icon={<DragOutlined />} size={"small"}/>
-                            </Col>
-                        </Row>
-                ))}
-            </Modal>
+            <ModalBox
+                tasksList={tasksList} setTasksList={setTasksList} currentDate={currentDate}
+                selectedDate={selectedDate} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}
+            />
         </Content>
     );
 };
