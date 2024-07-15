@@ -9,7 +9,8 @@ import {CheckboxChangeEvent} from "antd/es/checkbox";
 import {DeleteFilled, DragOutlined, EditFilled} from "@ant-design/icons";
 
 export interface ITask {
-    type: "warning" | "success" | "processing" | "error" | "default" | undefined;
+    id: number;
+    type: "success" | "processing" | undefined;
     content: string;
 }
 
@@ -23,10 +24,12 @@ const listData: ITasksList[] = [
         date: '08-01-2024',
         tasks: [
             {
+                id: 1,
                 type: 'success',
                 content: 'This is warning event.',
             },
             {
+                id: 2,
                 type: 'processing',
                 content: 'This is warning event.',
             }
@@ -36,7 +39,8 @@ const listData: ITasksList[] = [
         date: '01-07-2024',
         tasks: [
             {
-                type: 'warning',
+                id: 3,
+                type: 'success',
                 content: 'This is warning event.',
             }
         ]
@@ -87,6 +91,7 @@ const ContentBlock = () => {
 
     const handleClick = () => {
         const newTask: ITask = {
+            id: Date.now(),
             type: 'processing',
             content: task,
         };
@@ -110,8 +115,22 @@ const ContentBlock = () => {
         form.resetFields();
     }
 
-    const onChangeCheckbox = (e: CheckboxChangeEvent) => {
-        console.log(`checked = ${e.target.checked}`);
+    const toggleTask = (task: ITask) => {
+        const tasksListCopy = [...tasksList];
+        tasksListCopy.map((el) => {
+            if (el.date === getDateFormat(currentDate)) {
+                el.tasks.map(elem => {
+                    if (elem.id === task.id) {
+                        elem.type = elem.type === 'success' ? 'processing' : 'success';
+                    }
+                })
+            }
+        });
+        setTasksList([...tasksListCopy]);
+    }
+
+    const onChangeCheckbox = (e: CheckboxChangeEvent, task: ITask) => {
+        toggleTask(task);
     }
 
     const getTasksList = (value: Dayjs): ITasksList[] => {
@@ -169,12 +188,15 @@ const ContentBlock = () => {
                 {tasksForDate.length === 0
                     ? <p>No tasks for this date</p>
                     : tasksForDate.map((task, index) => (
-                        <Row className='row' align={'middle'}>
+                        <Row className='row' align={'middle'} key={index}>
                             <Col flex={'20px'} className='col'>
-                                <Checkbox onChange={onChangeCheckbox}></Checkbox>
+                                <Checkbox
+                                    onChange={(e) => onChangeCheckbox(e, task)}
+                                    checked={task.type === 'success'}
+                                ></Checkbox>
                             </Col>
                             <Col flex={"auto"} className='col'>
-                                <p key={index}>{task.content}</p>
+                                <p>{task.content}</p>
                             </Col>
                             <Col flex={'25px'} className='col'>
                                 <Button icon={<EditFilled />} size={"small"}/>
