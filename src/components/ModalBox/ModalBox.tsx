@@ -2,10 +2,10 @@ import React, {FC, useEffect, useState} from 'react';
 import {Button, Checkbox, Col, Form, Input, Modal, Row} from "antd";
 import {DeleteFilled, DragOutlined, EditFilled} from "@ant-design/icons";
 import {getDateFormat, getTasksForDate, ITask, ITasksList, listData} from "../ContentBlock/ContentBlock";
-import {useForm} from "antd/es/form/Form";
 import {setJSONToStorage} from "../../localStorage";
-import dayjs, {Dayjs} from "dayjs";
+import {Dayjs} from "dayjs";
 import {CheckboxChangeEvent} from "antd/es/checkbox";
+import InputTaskForm from "../InputTaskForm/InputTaskForm";
 
 export interface ModalBoxProps {
     tasksList: ITasksList[];
@@ -18,8 +18,6 @@ export interface ModalBoxProps {
 
 const ModalBox: FC<ModalBoxProps> = ({tasksList, setTasksList, currentDate, selectedDate, isModalOpen, setIsModalOpen}) => {
     const [tasksForDate, setTasksForDate] = useState<Array<ITask>>([]);
-    const [form] = useForm();
-    const [task, setTask] = useState('');
 
     useEffect(() => {
         if (tasksList.length === 0) {
@@ -43,32 +41,6 @@ const ModalBox: FC<ModalBoxProps> = ({tasksList, setTasksList, currentDate, sele
     const handleCancel = () => {
         setIsModalOpen(false);
     };
-
-    const handleClick = () => {
-        const newTask: ITask = {
-            id: Date.now(),
-            type: 'processing',
-            content: task,
-        };
-        if (tasksForDate.length === 0) {
-            const newDate: ITasksList = {
-                date: dayjs(currentDate).format('DD-MM-YYYY'),
-                tasks: [newTask]
-            };
-            setTasksList([...tasksList, newDate]);
-        } else {
-            const tasksListCopy = [...tasksList];
-            tasksListCopy.map((el) => {
-                if (el.date === getDateFormat(currentDate)) {
-                    el.tasks = [...el.tasks, newTask];
-                }
-            });
-            setTasksList([...tasksListCopy]);
-        }
-        setTasksForDate([...tasksForDate, newTask]);
-        setTask('');
-        form.resetFields();
-    }
 
     const toggleTask = (task: ITask) => {
         const tasksListCopy = [...tasksList];
@@ -112,25 +84,10 @@ const ModalBox: FC<ModalBoxProps> = ({tasksList, setTasksList, currentDate, sele
     return (
         <Modal title="Day tasks" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
             <p className="current_date">Current date: {selectedDate}</p>
-            <Form
-                layout={"inline"} className="form" autoComplete={'off'}
-                onFinish={handleClick} form={form}
-            >
-                <Form.Item
-                    className="input" name={'task'}
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please input your task!',
-                        },
-                    ]}
-                >
-                    <Input placeholder="input task" value={task} onChange={(event) => setTask(event.target.value)}/>
-                </Form.Item>
-                <Form.Item className="button_submit">
-                    <Button type="primary" htmlType={"submit"}>Submit</Button>
-                </Form.Item>
-            </Form>
+            <InputTaskForm
+                tasksList={tasksList} setTasksList={setTasksList} currentDate={currentDate}
+                tasksForDate={tasksForDate} setTasksForDate={setTasksForDate}
+            />
             {tasksForDate.length === 0
                 ? <p>No tasks for this date</p>
                 : tasksForDate.map((task, index) => (
