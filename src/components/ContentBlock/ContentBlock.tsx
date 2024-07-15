@@ -129,6 +129,27 @@ const ContentBlock = () => {
         setTasksList([...tasksListCopy]);
     }
 
+    const deleteTask = (task: ITask) => {
+        const tasksListCopy = [...tasksList];
+        let index = 0;
+        tasksListCopy.map((el) => {
+            if (el.date === getDateFormat(currentDate)) {
+                el.tasks.map((elem, i) => {
+                    if (elem.id === task.id) {
+                        index = i;
+                    }
+                });
+                el.tasks.splice(index, 1);
+                setTasksForDate([...el.tasks]);
+            }
+        });
+        setTasksList([...tasksListCopy]);
+    }
+
+    const handleClickDelete = (task: ITask) => {
+        deleteTask(task);
+    }
+
     const onChangeCheckbox = (e: CheckboxChangeEvent, task: ITask) => {
         toggleTask(task);
     }
@@ -202,7 +223,7 @@ const ContentBlock = () => {
                                 <Button icon={<EditFilled />} size={"small"}/>
                             </Col>
                             <Col flex={'25px'} className='col'>
-                                <Button icon={<DeleteFilled />} size={"small"}/>
+                                <Button icon={<DeleteFilled />} size={"small"} onClick={() => handleClickDelete(task)}/>
                             </Col>
                             <Col flex={'25px'} className='col'>
                                 <Button icon={<DragOutlined />} size={"small"}/>
