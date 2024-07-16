@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Badge, Calendar,} from "antd";
 import {Content} from "antd/es/layout/layout";
 import {Dayjs} from "dayjs";
@@ -65,6 +65,11 @@ const ContentBlock = () => {
     const [selectedDate, setSelectedDate] = useState(dayjs().format('DD-MM-YYYY'));
     const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
     const [tasksList, setTasksList] = useState<Array<ITasksList>>(getJSONFromStorage('tasksList'));
+    const [innerWidth, setInnerWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        window.onresize = () => setInnerWidth(window.innerWidth);
+    }, [])
 
     const showModal = (date: Dayjs) => {
         setSelectedDate(dayjs(date).format('DD-MM-YYYY'));
@@ -85,13 +90,25 @@ const ContentBlock = () => {
         );
     }
 
+    const dateCellRenderMini = (value: Dayjs) => {
+        const tasks = getTasksForDate(value, tasksList);
+        return (
+            <div> {
+                tasks.length > 0
+                    ? <div className='line'></div>
+                    : <></>
+            }</div>
+        );
+    }
+
     const cellRender = (current: Dayjs, info: any) => {
-        if (info.type === 'date') return dateCellRender(current);
+        if (info.type === 'date' && innerWidth > 800) return dateCellRender(current);
+        if (info.type === 'date' && innerWidth < 800) return dateCellRenderMini(current);
     }
 
     return (
         <Content className="content">
-            <Calendar className="calendar" cellRender={cellRender} onSelect={showModal}></Calendar>
+            <Calendar className="calendar" cellRender={cellRender} onSelect={showModal} fullscreen={innerWidth > 800}></Calendar>
             <ModalBox
                 tasksList={tasksList} setTasksList={setTasksList} currentDate={currentDate}
                 selectedDate={selectedDate} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}

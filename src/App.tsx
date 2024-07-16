@@ -13,7 +13,7 @@ dayjs.locale('ru');
 function App() {
     return (
         <ConfigProvider locale={locale}>
-            <Layout>
+            <Layout style={{minHeight:"100vh"}}>
                 <HeaderBlock/>
                 <ContentBlock/>
                 <FooterBlock/>
