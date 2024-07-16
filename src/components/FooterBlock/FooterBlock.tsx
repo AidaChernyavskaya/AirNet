@@ -3,7 +3,7 @@ import {Footer} from "antd/es/layout/layout";
 
 const FooterBlock = () => {
     return (
-        <Footer className="footer">To-do test assignment ©{new Date().getFullYear()}</Footer>
+        <Footer className="footer">Тестовое задание "Список дел" ©{new Date().getFullYear()}</Footer>
     );
 };
 

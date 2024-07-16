@@ -42,8 +42,8 @@ const ModalBox: FC<ModalBoxProps> = ({tasksList, setTasksList, currentDate, sele
     };
 
     return (
-        <Modal title="Day tasks" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-            <p className="current_date">Current date: {selectedDate}</p>
+        <Modal title="Задачи на день" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <p className="current_date">Выбранная дата: {selectedDate}</p>
             <InputTaskForm
                 tasksList={tasksList} setTasksList={setTasksList} currentDate={currentDate}
                 tasksForDate={tasksForDate} setTasksForDate={setTasksForDate}

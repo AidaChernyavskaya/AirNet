@@ -56,10 +56,10 @@ const InputTaskForm: FC<InputTaskFormProps> = ({tasksList, setTasksList, current
                     },
                 ]}
             >
-                <Input placeholder="input task" value={task} onChange={(event) => setTask(event.target.value)}/>
+                <Input placeholder="Введите задачу" value={task} onChange={(event) => setTask(event.target.value)}/>
             </Form.Item>
             <Form.Item className="button_submit">
-                <Button type="primary" htmlType={"submit"}>Submit</Button>
+                <Button type="primary" htmlType={"submit"}>Добавить</Button>
             </Form.Item>
         </Form>
     );
