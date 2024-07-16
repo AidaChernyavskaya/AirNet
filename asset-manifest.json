@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/airnet/static/css/main.54156a34.css",
+    "main.js": "/airnet/static/js/main.652ffa0c.js",
+    "index.html": "/airnet/index.html",
+    "main.54156a34.css.map": "/airnet/static/css/main.54156a34.css.map",
+    "main.652ffa0c.js.map": "/airnet/static/js/main.652ffa0c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.54156a34.css",
+    "static/js/main.652ffa0c.js"
+  ]
+}
