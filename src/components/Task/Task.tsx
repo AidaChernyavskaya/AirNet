@@ -1,11 +1,11 @@
-import React, {ChangeEvent, FC, useEffect, useState} from 'react';
+import React, {ChangeEvent, DetailedHTMLProps, FC, HTMLAttributes, useEffect, useState} from 'react';
 import {Button, Checkbox, Col, Input, Row} from "antd";
 import {CheckOutlined, CloseOutlined, DeleteFilled, DragOutlined, EditFilled} from "@ant-design/icons";
 import {getDateFormat, ITask, ITasksList} from "../ContentBlock/ContentBlock";
 import {CheckboxChangeEvent} from "antd/es/checkbox";
 import {Dayjs} from "dayjs";
 
-interface TaskProps {
+interface TaskProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>{
     task: ITask;
     tasksList: ITasksList[];
     setTasksList: Function;
@@ -13,7 +13,7 @@ interface TaskProps {
     setTasksForDate: Function;
 }
 
-const Task: FC<TaskProps> = ({task, tasksList, setTasksList, currentDate, setTasksForDate}) => {
+const Task: FC<TaskProps> = ({task, tasksList, setTasksList, currentDate, setTasksForDate, ...props}) => {
     const [isDisabled, setIsDisabled] = useState<boolean>(true);
     const [taskContent, setTaskContent] = useState(task.content);
 
@@ -93,7 +93,7 @@ const Task: FC<TaskProps> = ({task, tasksList, setTasksList, currentDate, setTas
     }
 
     return (
-        <Row className='row' align={'middle'}>
+        <Row className='row' align={'middle'} {...props}>
             <Col flex={'20px'} className='col'>
                 <Checkbox
                     onChange={(e) => onChangeCheckbox(e, task)}
