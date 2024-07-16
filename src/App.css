@@ -44,9 +44,9 @@ h2.ant-typography {
 }
 
 .form {
-  width: 100%;
-  justify-content: space-between;
   margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: auto 92px;
 }
 
 .ant-form-inline .ant-form-item {
@@ -70,6 +70,11 @@ h2.ant-typography {
   opacity: .6;
   background-color: #e1e7e9;
   border-radius: 2px;
+}
+
+.task_container {
+  display: grid;
+  grid-template-columns: 20px auto 25px 25px 25px;
 }
 
 @media screen and (max-width: 600px) {

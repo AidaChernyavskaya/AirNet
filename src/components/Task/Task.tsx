@@ -93,36 +93,28 @@ const Task: FC<TaskProps> = ({task, tasksList, setTasksList, currentDate, setTas
     }
 
     return (
-        <Row className='row' align={'middle'} {...props}>
-            <Col flex={'20px'} className='col'>
+        <div  {...props}>
+            <div className='task_container'>
                 <Checkbox
                     onChange={(e) => onChangeCheckbox(e, task)}
                     checked={task.type === 'success'}
-                ></Checkbox>
-            </Col>
-            <Col flex={"auto"} className='col'>
+                />
                 <Input
                     variant={'borderless'} value={isDisabled ? task.content : taskContent}
-                    disabled={isDisabled} style={{color: isDisabled ? 'black' : 'red'}}
+                    disabled={isDisabled} style={{color: 'black'}}
                     onChange={(e) => handleChange(e)} onPressEnter={() => handleChangeTask(task)}
                 />
-            </Col>
-            <Col flex={'25px'} className='col'>
                 {isDisabled
                     ? <Button icon={<EditFilled />} size={"small"} onClick={() => handleClickEdit(task)}/>
                     : <Button icon={<CheckOutlined />} size={"small"} onClick={() => handleChangeTask(task)}/>
                 }
-            </Col>
-            <Col flex={'25px'} className='col'>
                 {isDisabled
                     ? <Button icon={<DeleteFilled />} size={"small"} onClick={() => handleClickDelete(task)}/>
                     : <Button icon={<CloseOutlined />} size={"small"} onClick={() => handleCancelChanges(task)}/>
                 }
-            </Col>
-            <Col flex={'25px'} className='col'>
                 <Button icon={<DragOutlined />} size={"small"}/>
-            </Col>
-        </Row>
+            </div>
+        </div>
     );
 };
 

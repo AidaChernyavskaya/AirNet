@@ -17,35 +17,6 @@ export interface ITasksList {
     tasks: ITask[]
 }
 
-export const listData: ITasksList[] = [
-    {
-        date: '08-01-2024',
-        tasks: [
-            {
-                id: 1,
-                type: 'success',
-                content: 'This is warning event.',
-            },
-            {
-                id: 2,
-                type: 'processing',
-                content: 'This is warning event.',
-            }
-        ]
-    },
-    {
-        date: '01-07-2024',
-        tasks: [
-            {
-                id: 3,
-                type: 'success',
-                content: 'This is warning event.',
-            }
-        ]
-
-    },
-];
-
 export const getDateFormat = (value: Dayjs): string => {
     return dayjs(value).format('DD-MM-YYYY');
 }

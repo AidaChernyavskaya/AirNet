@@ -1,6 +1,6 @@
 import React, {FC, useEffect, useState} from 'react';
 import {Modal} from "antd";
-import {getTasksForDate, ITask, ITasksList, listData} from "../ContentBlock/ContentBlock";
+import {getTasksForDate, ITask, ITasksList} from "../ContentBlock/ContentBlock";
 import {setJSONToStorage} from "../../localStorage";
 import {Dayjs} from "dayjs";
 import InputTaskForm from "../InputTaskForm/InputTaskForm";
@@ -20,8 +20,8 @@ const ModalBox: FC<ModalBoxProps> = ({tasksList, setTasksList, currentDate, sele
 
     useEffect(() => {
         if (tasksList.length === 0) {
-            setJSONToStorage('tasksList', JSON.stringify(listData));
-            setTasksList(listData);
+            setJSONToStorage('tasksList', JSON.stringify([]));
+            setTasksList([]);
         }
     },[])
 
